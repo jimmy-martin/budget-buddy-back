@@ -9,6 +9,7 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\Repository\UserRepository;
+use App\State\DeleteUserStateProcessor;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -21,7 +22,9 @@ use Doctrine\ORM\Mapping as ORM;
         new GetCollection(),
         new Post(),
         new Patch(),
-        new Delete(),
+        new Delete(
+            processor: DeleteUserStateProcessor::class,
+        ),
     ]
 )]
 class User
@@ -164,5 +167,16 @@ class User
         }
 
         return $this;
+    }
+
+    public function canBeDeleted(): bool
+    {
+        foreach ($this->getExpenseReports() as $expenseReport) {
+            if (ExpenseReport::STATUS_EN_COURS === $expenseReport->getStatus()) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
