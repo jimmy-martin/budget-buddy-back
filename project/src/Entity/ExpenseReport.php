@@ -35,14 +35,19 @@ class ExpenseReport
     #[ORM\Column(length: 50)]
     private ?string $reason = null;
 
-    #[ORM\Column(length: 30)]
-    private ?string $status = null;
+    #[ORM\Column(length: 30, options: ['default' => self::STATUS_EN_COURS])]
+    private ?string $status;
 
     #[ORM\Column]
     private ?float $cost = null;
 
     #[ORM\ManyToOne(inversedBy: 'expenseReports')]
     private ?User $owner = null;
+
+    public function __construct()
+    {
+        $this->status = self::STATUS_EN_COURS;
+    }
 
     public function getId(): ?int
     {
