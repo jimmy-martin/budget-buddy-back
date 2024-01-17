@@ -10,11 +10,14 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
+use App\Controller\CreateUser;
 use App\Repository\UserRepository;
 use App\State\Processor\DeleteUserStateProcessor;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
@@ -22,7 +25,9 @@ use Doctrine\ORM\Mapping as ORM;
     operations: [
         new Get(),
         new GetCollection(),
-        new Post(),
+        new Post(
+            controller: CreateUser::class
+        ),
         new Patch(),
         new Delete(
             processor: DeleteUserStateProcessor::class,
@@ -34,7 +39,7 @@ use Doctrine\ORM\Mapping as ORM;
         'isDeleted' => 'exact',
     ]
 )]
-class User
+class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -185,5 +190,18 @@ class User
         }
 
         return true;
+    }
+
+    public function getRoles(): array
+    {
+        return [$this->getRole()->getTitle()];
+    }
+
+    public function eraseCredentials(): void
+    {}
+
+    public function getUserIdentifier(): string
+    {
+        return $this->getMail();
     }
 }
