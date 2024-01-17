@@ -19,5 +19,7 @@ class RefuseExpenseReport extends AbstractController
         $expenseReport->setStatus(ExpenseReport::STATUT_REFUSEE);
 
         $this->entityManager->flush();
+
+        return $expenseReport;
     }
 }

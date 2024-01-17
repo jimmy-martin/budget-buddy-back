@@ -19,5 +19,7 @@ class PayExpenseReport extends AbstractController
         $expenseReport->setStatus(ExpenseReport::STATUT_PAYE);
 
         $this->entityManager->flush();
+
+        return $expenseReport;
     }
 }
