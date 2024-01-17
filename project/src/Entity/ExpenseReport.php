@@ -10,6 +10,10 @@ use Doctrine\ORM\Mapping as ORM;
 #[ApiResource]
 class ExpenseReport
 {
+    const STATUS_EN_COURS = 'en cours';
+    const STATUT_PAYE = 'payée';
+    const STATUT_REFUSEE = 'refusée';
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
