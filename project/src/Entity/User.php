@@ -2,15 +2,38 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Post;
 use App\Repository\UserRepository;
+use App\State\DeleteUserStateProcessor;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
-#[ApiResource]
+#[ApiResource(
+    operations: [
+        new Get(),
+        new GetCollection(),
+        new Post(),
+        new Patch(),
+        new Delete(
+            processor: DeleteUserStateProcessor::class,
+        ),
+    ]
+)]
+#[ApiFilter(
+    SearchFilter::class, properties: [
+        'isDeleted' => 'exact',
+    ]
+)]
 class User
 {
     #[ORM\Id]
@@ -30,8 +53,8 @@ class User
     #[ORM\Column(length: 255)]
     private ?string $fullname = null;
 
-    #[ORM\Column]
-    private ?bool $isDeleted = null;
+    #[ORM\Column(options: ['default' => false])]
+    private ?bool $isDeleted;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
@@ -42,6 +65,7 @@ class User
 
     public function __construct()
     {
+        $this->isDeleted = false;
         $this->expenseReports = new ArrayCollection();
     }
 
@@ -150,5 +174,16 @@ class User
         }
 
         return $this;
+    }
+
+    public function canBeDeleted(): bool
+    {
+        foreach ($this->getExpenseReports() as $expenseReport) {
+            if (ExpenseReport::STATUS_EN_COURS === $expenseReport->getStatus()) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

@@ -3,11 +3,24 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Post;
 use App\Repository\ExpenseReportRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ExpenseReportRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    operations: [
+        new Get(),
+        new GetCollection(),
+        new Post(),
+        new Patch(),
+        new Delete(),
+    ]
+)]
 class ExpenseReport
 {
     const STATUS_EN_COURS = 'en cours';
@@ -22,14 +35,19 @@ class ExpenseReport
     #[ORM\Column(length: 50)]
     private ?string $reason = null;
 
-    #[ORM\Column(length: 30)]
-    private ?string $status = null;
+    #[ORM\Column(length: 30, options: ['default' => self::STATUS_EN_COURS])]
+    private ?string $status;
 
     #[ORM\Column]
     private ?float $cost = null;
 
     #[ORM\ManyToOne(inversedBy: 'expenseReports')]
     private ?User $owner = null;
+
+    public function __construct()
+    {
+        $this->status = self::STATUS_EN_COURS;
+    }
 
     public function getId(): ?int
     {
