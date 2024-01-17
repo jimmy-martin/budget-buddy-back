@@ -9,6 +9,7 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\Controller\PayExpenseReport;
+use App\Controller\RefuseExpenseReport;
 use App\Repository\ExpenseReportRepository;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -23,6 +24,10 @@ use Doctrine\ORM\Mapping as ORM;
         new Get(
             uriTemplate: '/expense_reports/{id}/pay',
             controller: PayExpenseReport::class
+        ),
+        new Get(
+            uriTemplate: '/expense_reports/{id}/refuse',
+            controller: RefuseExpenseReport::class
         ),
     ]
 )]
