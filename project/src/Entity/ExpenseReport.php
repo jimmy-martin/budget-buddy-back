@@ -23,11 +23,17 @@ use Doctrine\ORM\Mapping as ORM;
         new Delete(),
         new Get(
             uriTemplate: '/expense_reports/{id}/pay',
-            controller: PayExpenseReport::class
+            controller: PayExpenseReport::class,
+            openapiContext: [
+                'summary' => 'Pay an expense report',
+            ]
         ),
         new Get(
             uriTemplate: '/expense_reports/{id}/refuse',
-            controller: RefuseExpenseReport::class
+            controller: RefuseExpenseReport::class,
+            openapiContext: [
+                'summary' => 'Refuse an expense report',
+            ]
         ),
     ]
 )]

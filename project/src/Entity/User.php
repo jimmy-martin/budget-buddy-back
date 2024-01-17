@@ -11,6 +11,8 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\Controller\CreateUser;
+use App\Controller\GetUserExpenses;
+use App\Groups\UserGroups;
 use App\Repository\UserRepository;
 use App\State\Processor\DeleteUserStateProcessor;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -18,54 +20,80 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
 #[ApiResource(
     operations: [
-        new Get(),
-        new GetCollection(),
+        new Get(
+            normalizationContext: [
+                'groups' => [UserGroups::USER_READ, UserGroups::USER_READ_ITEM],
+            ]
+        ),
+        new GetCollection(
+            normalizationContext: [
+                'groups' => [UserGroups::USER_READ],
+            ]
+        ),
         new Post(
-            controller: CreateUser::class
+            controller: CreateUser::class,
+            normalizationContext: [
+                'groups' => [UserGroups::USER_READ_ITEM],
+            ]
         ),
         new Patch(),
         new Delete(
             processor: DeleteUserStateProcessor::class,
         ),
+        new Get(
+            uriTemplate: '/users/{id}/expense_reports',
+            controller: GetUserExpenses::class,
+            openapiContext: [
+                'summary' => 'Get expenses of a user',
+            ]
+        )
     ]
 )]
 #[ApiFilter(
     SearchFilter::class, properties: [
-        'isDeleted' => 'exact',
-    ]
+    'isDeleted' => 'exact',
+]
 )]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups([UserGroups::USER_READ, UserGroups::USER_READ_ITEM])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
     private ?string $password = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups([UserGroups::USER_READ, UserGroups::USER_READ_ITEM])]
     private ?string $mail = null;
 
     #[ORM\Column(length: 50, nullable: true)]
+    #[Groups([UserGroups::USER_READ, UserGroups::USER_READ_ITEM])]
     private ?string $phone = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups([UserGroups::USER_READ, UserGroups::USER_READ_ITEM])]
     private ?string $fullname = null;
 
     #[ORM\Column(options: ['default' => false])]
+    #[Groups([UserGroups::USER_READ, UserGroups::USER_READ_ITEM])]
     private ?bool $isDeleted;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups([UserGroups::USER_READ_ITEM])]
     private ?Role $role = null;
 
     #[ORM\OneToMany(mappedBy: 'owner', targetEntity: ExpenseReport::class)]
+    #[Groups([UserGroups::USER_READ_ITEM])]
     private Collection $expenseReports;
 
     public function __construct()
