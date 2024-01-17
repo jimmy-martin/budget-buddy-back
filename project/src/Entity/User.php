@@ -43,8 +43,8 @@ class User
     #[ORM\Column(length: 255)]
     private ?string $fullname = null;
 
-    #[ORM\Column]
-    private ?bool $isDeleted = null;
+    #[ORM\Column(options: ['default' => false])]
+    private ?bool $isDeleted;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
@@ -55,6 +55,7 @@ class User
 
     public function __construct()
     {
+        $this->isDeleted = false;
         $this->expenseReports = new ArrayCollection();
     }
 
