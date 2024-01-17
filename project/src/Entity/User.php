@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
@@ -25,6 +27,11 @@ use Doctrine\ORM\Mapping as ORM;
         new Delete(
             processor: DeleteUserStateProcessor::class,
         ),
+    ]
+)]
+#[ApiFilter(
+    SearchFilter::class, properties: [
+        'isDeleted' => 'exact',
     ]
 )]
 class User
