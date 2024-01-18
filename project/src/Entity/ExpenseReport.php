@@ -58,6 +58,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ApiFilter(
     SearchFilter::class, properties: [
         'owner.role' => 'exact',
+        'owner.isDeleted' => 'exact',
     ]
 )]
 class ExpenseReport
