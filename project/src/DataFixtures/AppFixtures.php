@@ -46,7 +46,7 @@ class AppFixtures extends Fixture
 
             $expenseReport = (new ExpenseReport())
                 ->setOwner($randomUser)
-                ->setReason($faker->sentence(3))
+                ->setReason($faker->sentence(5))
                 ->setStatus(ExpenseReport::STATUS_EN_COURS)
                 ->setCost($faker->randomFloat(2, 0, 100));
 
