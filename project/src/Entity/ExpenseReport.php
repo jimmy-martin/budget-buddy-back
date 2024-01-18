@@ -48,7 +48,7 @@ class ExpenseReport
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 50)]
+    #[ORM\Column(length: 255)]
     private ?string $reason = null;
 
     #[ORM\Column(length: 30, options: ['default' => self::STATUS_EN_COURS])]
