@@ -87,7 +87,6 @@ database-init-test: ## Init database for test
 	$(SYMFONY_CONSOLE) d:d:d --force --if-exists --env=test
 	$(SYMFONY_CONSOLE) d:d:c --env=test
 	$(SYMFONY_CONSOLE) d:m:m --no-interaction --env=test
-	$(SYMFONY_CONSOLE) d:f:l --no-interaction --env=test
 
 unit-test: ## Run unit tests
 	$(MAKE) database-init-test
