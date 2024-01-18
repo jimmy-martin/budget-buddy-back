@@ -14,6 +14,19 @@ services:
     networks:
       - dev
 
+  phpmyadmin:
+    image: phpmyadmin
+    container_name: phpmyadmin_budget_buddy
+    restart: always
+    depends_on:
+      - db
+    ports:
+      - "8888:80"
+    environment:
+      PMA_HOST: db
+    networks:
+      - dev
+
   www:
     build: docker/php
     container_name: www_budget_buddy
