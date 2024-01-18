@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
@@ -56,11 +57,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
         )
     ]
 )]
-#[ApiFilter(
-    SearchFilter::class, properties: [
-    'isDeleted' => 'exact',
-]
-)]
+#[ApiFilter(SearchFilter::class)]
+#[ApiFilter(OrderFilter::class)]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -232,7 +230,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     public function eraseCredentials(): void
-    {}
+    {
+    }
 
     public function getUserIdentifier(): string
     {
