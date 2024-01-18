@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
@@ -10,14 +12,24 @@ use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\Controller\PayExpenseReport;
 use App\Controller\RefuseExpenseReport;
+use App\Groups\ExpenseReportGroups;
 use App\Repository\ExpenseReportRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: ExpenseReportRepository::class)]
 #[ApiResource(
     operations: [
-        new Get(),
-        new GetCollection(),
+        new Get(
+            normalizationContext: [
+                'groups' => [ExpenseReportGroups::EXPENSE_REPORT_READ_ITEM],
+            ]
+        ),
+        new GetCollection(
+            normalizationContext: [
+                'groups' => [ExpenseReportGroups::EXPENSE_REPORT_READ],
+            ]
+        ),
         new Post(),
         new Patch(),
         new Delete(),
@@ -26,6 +38,9 @@ use Doctrine\ORM\Mapping as ORM;
             controller: PayExpenseReport::class,
             openapiContext: [
                 'summary' => 'Pay an expense report',
+            ],
+            normalizationContext: [
+                'groups' => [ExpenseReportGroups::EXPENSE_REPORT_READ_ITEM],
             ]
         ),
         new Get(
@@ -33,8 +48,17 @@ use Doctrine\ORM\Mapping as ORM;
             controller: RefuseExpenseReport::class,
             openapiContext: [
                 'summary' => 'Refuse an expense report',
+            ],
+            normalizationContext: [
+                'groups' => [ExpenseReportGroups::EXPENSE_REPORT_READ_ITEM],
             ]
         ),
+    ]
+)]
+#[ApiFilter(
+    SearchFilter::class, properties: [
+        'owner.role' => 'exact',
+        'owner.isDeleted' => 'exact',
     ]
 )]
 class ExpenseReport
@@ -46,18 +70,23 @@ class ExpenseReport
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups([ExpenseReportGroups::EXPENSE_REPORT_READ, ExpenseReportGroups::EXPENSE_REPORT_READ_ITEM])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups([ExpenseReportGroups::EXPENSE_REPORT_READ, ExpenseReportGroups::EXPENSE_REPORT_READ_ITEM])]
     private ?string $reason = null;
 
     #[ORM\Column(length: 30, options: ['default' => self::STATUS_EN_COURS])]
+    #[Groups([ExpenseReportGroups::EXPENSE_REPORT_READ, ExpenseReportGroups::EXPENSE_REPORT_READ_ITEM])]
     private ?string $status;
 
     #[ORM\Column]
+    #[Groups([ExpenseReportGroups::EXPENSE_REPORT_READ, ExpenseReportGroups::EXPENSE_REPORT_READ_ITEM])]
     private ?float $cost = null;
 
     #[ORM\ManyToOne(inversedBy: 'expenseReports')]
+    #[Groups([ExpenseReportGroups::EXPENSE_REPORT_READ, ExpenseReportGroups::EXPENSE_REPORT_READ_ITEM])]
     private ?User $owner = null;
 
     public function __construct()

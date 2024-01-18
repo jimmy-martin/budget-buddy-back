@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
@@ -12,6 +13,7 @@ use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\Controller\CreateUser;
 use App\Controller\GetUserExpenses;
+use App\Groups\ExpenseReportGroups;
 use App\Groups\UserGroups;
 use App\Repository\UserRepository;
 use App\State\Processor\DeleteUserStateProcessor;
@@ -55,11 +57,8 @@ use Symfony\Component\Serializer\Annotation\Groups;
         )
     ]
 )]
-#[ApiFilter(
-    SearchFilter::class, properties: [
-    'isDeleted' => 'exact',
-]
-)]
+#[ApiFilter(SearchFilter::class)]
+#[ApiFilter(OrderFilter::class)]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -80,7 +79,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $phone = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups([UserGroups::USER_READ, UserGroups::USER_READ_ITEM])]
+    #[Groups([
+        UserGroups::USER_READ,
+        UserGroups::USER_READ_ITEM,
+        ExpenseReportGroups::EXPENSE_REPORT_READ,
+        ExpenseReportGroups::EXPENSE_REPORT_READ_ITEM
+    ])]
     private ?string $fullname = null;
 
     #[ORM\Column(options: ['default' => false])]
@@ -226,7 +230,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     public function eraseCredentials(): void
-    {}
+    {
+    }
 
     public function getUserIdentifier(): string
     {
