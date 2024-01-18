@@ -12,6 +12,7 @@ use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\Controller\CreateUser;
 use App\Controller\GetUserExpenses;
+use App\Groups\ExpenseReportGroups;
 use App\Groups\UserGroups;
 use App\Repository\UserRepository;
 use App\State\Processor\DeleteUserStateProcessor;
@@ -80,7 +81,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $phone = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups([UserGroups::USER_READ, UserGroups::USER_READ_ITEM])]
+    #[Groups([
+        UserGroups::USER_READ,
+        UserGroups::USER_READ_ITEM,
+        ExpenseReportGroups::EXPENSE_REPORT_READ,
+        ExpenseReportGroups::EXPENSE_REPORT_READ_ITEM
+    ])]
     private ?string $fullname = null;
 
     #[ORM\Column(options: ['default' => false])]
