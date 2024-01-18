@@ -15,6 +15,8 @@ jobs:
     defaults:
       run:
         working-directory: project
+    env:
+      DATABASE_URL: sqlite:///%kernel.project_dir%/data/database.sqlite
     steps:
     #  To automatically get bug fixes and new Php versions for shivammathur/setup-php,
     # change this to (see https://github.com/shivammathur/setup-php#bookmark-versioning):
@@ -39,7 +41,7 @@ jobs:
       run: |
         mkdir -p data
         touch data/database.sqlite
+    - name: Execute migrations
+      run: php bin/console d:m:m --no-interaction
     - name: Execute tests (Unit and Feature tests) via PHPUnit
-      env:
-        DATABASE_URL: sqlite:///%kernel.project_dir%/data/database.sqlite
       run: vendor/bin/phpunit
