@@ -10,6 +10,7 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
+use App\Controller\DeleteExpenseReport;
 use App\Controller\PayExpenseReport;
 use App\Controller\RefuseExpenseReport;
 use App\Groups\ExpenseReportGroups;
@@ -32,7 +33,9 @@ use Symfony\Component\Serializer\Annotation\Groups;
         ),
         new Post(),
         new Patch(),
-        new Delete(),
+        new Delete(
+            controller: DeleteExpenseReport::class,
+        ),
         new Get(
             uriTemplate: '/expense_reports/{id}/pay',
             controller: PayExpenseReport::class,
@@ -145,5 +148,10 @@ class ExpenseReport
         $this->owner = $owner;
 
         return $this;
+    }
+
+    public function canBeDeleted(): bool
+    {
+        return $this->status === self::STATUS_EN_COURS;
     }
 }
