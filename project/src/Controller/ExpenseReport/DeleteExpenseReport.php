@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\ExpenseReport;
 
 use App\Entity\ExpenseReport;
 use Doctrine\ORM\EntityManagerInterface;

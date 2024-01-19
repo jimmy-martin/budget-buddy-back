@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\ExpenseReport;
 
 use App\Entity\ExpenseReport;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
-class RefuseExpenseReport extends AbstractController
+class PayExpenseReport extends AbstractController
 {
     public function __construct(
         private EntityManagerInterface $entityManager
@@ -16,7 +16,7 @@ class RefuseExpenseReport extends AbstractController
 
     public function __invoke(ExpenseReport $expenseReport)
     {
-        $expenseReport->setStatus(ExpenseReport::STATUT_REFUSEE);
+        $expenseReport->setStatus(ExpenseReport::STATUT_PAYE);
 
         $this->entityManager->flush();
 
